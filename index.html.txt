@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trading & Account Prototype</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; }
+    body { background: #0b1320; color: #ffffff; min-height: 100vh; }
+    .hidden { display: none; }
+
+    .demo-banner {
+      background: #dc2626;
+      color: #ffffff;
+      text-align: center;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 0.4px;
+    }
+
+    .top-nav {
+      background: #0f172a;
+      padding: 14px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .brand { font-size: 18px; font-weight: bold; color: #fbbf24; }
+    .nav-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .nav-btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #1e293b;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .nav-btn.active, .nav-btn:hover {
+      background: #2563eb;
+      border-color: #2563eb;
+    }
+
+    .status-msg {
+      max-width: 820px;
+      margin: 14px auto 0;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: #14532d;
+      color: #dcfce7;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .status-msg.error {
+      background: #7f1d1d;
+      color: #fecaca;
+    }
+
+    /* Landing & Auth View */
+    .hero {
+      max-width: 760px;
+      margin: 28px auto 20px;
+      padding: 0 20px;
+    }
+
+    .hero h1 { font-size: 30px; margin-bottom: 10px; }
+    .hero p { color: #cbd5e1; line-height: 1.5; font-size: 15px; }
+
+    .forms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      max-width: 820px;
+      margin: 0 auto 28px;
+      padding: 0 20px;
+    }
+
+    .auth-card {
+      background: #ffffff;
+      color: #111827;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .auth-card h2 { font-size: 19px; margin-bottom: 14px; }
+
+    .auth-card input, .auth-card select {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #111827;
+      background: #ffffff;
+    }
+
+    .btn-yellow {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #facc15;
+      color: #111827;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-blue {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .section-wrap {
+      max-width: 820px;
+      margin: 22px auto;
+      padding: 0 20px;
+    }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .plan-box {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .tool-box {
+      max-width: 540px;
+      margin: 22px auto;
+      padding: 18px;
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 10px;
+    }
+
+    .tool-box input, .tool-box select {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #374151;
+      background: #0b1320;
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    /* Dashboard View (Dark / Gold Layout) */
+    .dash-wrap { background: #14110b; color: #ffffff; padding-bottom: 36px; }
+
+    .subbar {
+      background: #0d0d0d;
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+
+    .subbar button {
+      background: none;
+      border: none;
+      color: #e5e5e5;
+      font-size: 11px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .welcome-strip {
+      background: #ffffff;
+      color: #111827;
+      padding: 12px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .welcome-strip strong { color: #d97706; }
+
+    .ref-badge {
+      background: #f59e0b;
+      color: #ffffff;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .overview-panel {
+      background: linear-gradient(180deg, #9a6b21 0%, #6d4912 100%);
+      padding: 24px 16px;
+    }
+
+    .overview-title {
+      text-align: center;
+      color: #fde68a;
+      font-size: 15px;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      max-width: 960px;
+      margin: 0 auto 16px;
+    }
+
+    .gold-card {
+      background: rgba(20, 14, 5, 0.35);
+      border: 1px solid rgba(253, 230, 138, 0.35);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .gold-label {
+      font-size: 11px;
+      color: #fde68a;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .gold-val { font-size: 20px; font-weight: bold; }
+
+    .gold-btn {
+      margin-top: 10px;
+      background: #fbbf24;
+      color: #111827;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* Admin View */
+    .admin-wrap {
+      max-width: 900px;
+      margin: 24px auto;
+      padding: 0 20px 40px;
+    }
+
+    .admin-card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .admin-card h2, .admin-card h3 { margin-bottom: 12px; }
+
+    .admin-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .admin-card input, .admin-card select {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #374151;
+      background: #0b1320;
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    .admin-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: #ffffff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid #1f2937;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-banner">EDUCATIONAL UI PROTOTYPE — SIMULATED BALANCES ONLY (LOCAL BROWSER STORAGE)</div>
+
+  <header class="top-nav">
+    <div class="brand">PrimeLedger Demo</div>
+    <div class="nav-actions">
+      <button id="btnHome" class="nav-btn active" type="button">Home / Auth</button>
+      <button id="btnDashboard" class="nav-btn" type="button">Dashboard</button>
+      <button id="btnAdmin" class="nav-btn" type="button">Admin Panel</button>
+    </div>
+  </header>
+
+  <div id="statusBox" class="status-msg hidden"></div>
+
+  <!-- VIEW 1: LANDING, REGISTER & LOGIN -->
+  <main id="homeView">
+    <section class="hero">
+      <h1>Get More From Your Trading Interface</h1>
+      <p>Register or sign in to view the account dashboard, or open the Admin Panel to configure a sign-in bonus and add profit/balance to registered accounts.</p>
+    </section>
+
+    <section class="forms-grid">
+      <div class="auth-card">
+        <h2>Create an Account</h2>
+        <form id="registerForm">
+          <input type="text" id="regFirstName" placeholder="First Name" required />
+          <input type="text" id="regLastName" placeholder="Last Name" required />
+          <input type="text" id="regUsername" placeholder="Username" required />
+          <input type="email" id="regEmail" placeholder="Email Address" required />
+          <input type="text" id="regPhone" placeholder="Phone Number" />
+          <input type="text" id="regCountry" placeholder="Country" />
+          <input type="password" id="regPassword" placeholder="Password" required />
+          <button class="btn-yellow" type="submit">Register</button>
+        </form>
+      </div>
+
+      <div class="auth-card">
+        <h2>Sign In</h2>
+        <form id="loginForm">
+          <input type="text" id="loginIdentifier" placeholder="Username or Email" required />
+          <input type="password" id="loginPassword" placeholder="Password" required />
+          <button class="btn-blue" type="submit">Login</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="section-wrap">
+      <h2 style="text-align:center;">Investment Plans (Demo)</h2>
+      <div class="plans-grid">
+        <div class="plan-box">
+          <h3>Day Plan</h3>
+          <p style="color:#fbbf24; font-size:18px; font-weight:bold; margin:8px 0;">Sample Tier A</p>
+          <p style="color:#9ca3af; font-size:13px;">Simulated short-term demo tier.</p>
+        </div>
+        <div class="plan-box">
+          <h3>Swing Plan</h3>
+          <p style="color:#fbbf24; font-size:18px; font-weight:bold; margin:8px 0;">Sample Tier B</p>
+          <p style="color:#9ca3af; font-size:13px;">Simulated medium-term demo tier.</p>
+        </div>
+        <div class="plan-box">
+          <h3>Position Plan</h3>
+          <p style="color:#fbbf24; font-size:18px; font-weight:bold; margin:8px 0;">Sample Tier C</p>
+          <p style="color:#9ca3af; font-size:13px;">Simulated long-term demo tier.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="tool-box">
+      <h3 style="margin-bottom:10px;">Bitcoin to Currency Calculator</h3>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <input id="btcInput" type="number" step="any" value="1" placeholder="BTC amount" style="flex:1; min-width:120px;" />
+        <select id="fiatSelect" style="flex:1; min-width:120px;">
+          <option value="USD" selected>USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="GBP">GBP (£)</option>
+        </select>
+      </div>
+      <p id="btcConverted" style="margin-top:12px; color:#fde68a; font-weight:bold;"></p>
+    </section>
+
+    <section class="tool-box" style="margin-bottom:36px; text-align:center;">
+      <h3 style="margin-bottom:10px;">Demo Reference / Registration ID</h3>
+      <button id="toggleRefBtn" class="admin-btn" type="button">Click to Reveal Reference ID</button>
+      <p id="refCodeBox" class="hidden" style="margin-top:12px; font-family:monospace; font-size:15px; color:#93c5fd;">DEMO-REF-509649484937</p>
+    </section>
+  </main>
+
+  <!-- VIEW 2: USER DASHBOARD -->
+  <section id="dashboardView" class="dash-wrap hidden">
+    <div class="subbar">
+      <button type="button" onclick="showMessage('Viewing Account Overview')">My Account</button>
+      <button type="button" onclick="showMessage('Demo deposit action selected')">Deposit</button>
+      <button type="button" onclick="showMessage('No simulated withdrawals yet')">Withdraw History</button>
+      <button type="button" onclick="showMessage('Current demo plan: Silver')">Upgrade Account</button>
+      <button id="logoutBtn" type="button">Logout</button>
+    </div>
+
+    <div class="welcome-strip">
+      <span>WELCOME, <strong id="dashWelcomeName">USER</strong></span>
+      <span id="dashRefBadge" class="ref-badge">REFERRAL CODE: USER</span>
+    </div>
+
+    <div style="height: 300px; background: #000000;">
+      <iframe
+        src="https://s.tradingview.com/widgetembed/?symbol=BITSTAMP%3ABTCUSD&interval=15&theme=dark&style=1&locale=en"
+        style="width:100%; height:100%; border:0;"
+        title="BTCUSD Chart"></iframe>
+    </div>
+
+    <div class="overview-panel">
+      <div class="overview-title">ACCOUNT OVERVIEW</div>
+
+      <div class="cards-grid">
+        <div class="gold-card">
+          <div class="gold-label">Your Username</div>
+          <div id="dashUsername" class="gold-val">—</div>
+        </div>
+        <div class="gold-card">
+          <div class="gold-label">Registration Date</div>
+          <div id="dashRegDate" class="gold-val" style="font-size:14px;">—</div>
+        </div>
+        <div class="gold-card">
+          <div class="gold-label">Last Access</div>
+          <div id="dashLastAccess" class="gold-val" style="font-size:14px;">—</div>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="gold-card">
+          <div id="dashDeposits" class="gold-val">$0.00</div>
+          <div class="gold-label">Active Deposits</div>
+          <button class="gold-btn" type="button" onclick="showMessage('Demo deposit modal placeholder')">MAKE A DEPOSIT</button>
+        </div>
+        <div class="gold-card">
+          <div id="dashBalance" class="gold-val">$0.00</div>
+          <div class="gold-label">Your Balance</div>
+          <button class="gold-btn" type="button" onclick="showMessage('Demo withdrawal request placeholder')">WITHDRAW FUNDS</button>
+        </div>
+        <div class="gold-card">
+          <div id="dashBonus" class="gold-val">$0.00</div>
+          <div class="gold-label">Added Bonus</div>
+          <button class="gold-btn" type="button" onclick="showMessage('Demo bonus withdrawal placeholder')">WITHDRAW BONUS</button>
+        </div>
+      </div>
+
+      <div class="overview-title" style="margin-top:18px;">YOUR PLAN / WITHDRAWALS</div>
+      <div class="cards-grid">
+        <div class="gold-card">
+          <div id="dashPlan" class="gold-val">Silver</div>
+          <div class="gold-label">Current Plan</div>
+        </div>
+        <div class="gold-card">
+          <div class="gold-val">$0.00</div>
+          <div class="gold-label">Withdrawals</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEW 3: ADMIN PANEL -->
+  <section id="adminView" class="admin-wrap hidden">
+    <div id="adminLockBox" class="admin-card">
+      <h2>Admin Passcode</h2>
+      <p style="color:#9ca3af; font-size:13px; margin-bottom:12px;">Default demo passcode: <code>admin1234</code></p>
+      <form id="adminAuthForm" class="admin-row">
+        <input type="password" id="adminPassInput" placeholder="Enter passcode" required />
+        <button class="admin-btn" type="submit">Unlock Admin</button>
+      </form>
+    </div>
+
+    <div id="adminControlsBox" class="hidden">
+      <div class="admin-card">
+        <h3>Set Default Sign-In Bonus (Applied to New Accounts)</h3>
+        <form id="bonusForm" class="admin-row">
+          <input type="number" step="0.01" min="0" id="bonusInput" required />
+          <button class="admin-btn" type="submit">Save Sign-In Bonus</button>
+        </form>
+      </div>
+
+      <div class="admin-card">
+        <h3>Add Profit / Balance or Bonus to a Registered Account</h3>
+        <form id="creditForm" class="admin-row">
+          <select id="creditUserSelect" required></select>
+          <select id="creditTypeSelect">
+            <option value="profit">Add Profit / Balance (+ Balance)</option>
+            <option value="bonus">Add Bonus (+ Bonus & Balance)</option>
+          </select>
+          <input type="number" step="0.01" id="creditAmountInput" placeholder="Amount (USD)" required />
+          <button class="admin-btn" type="submit">Apply Amount</button>
+        </form>
+      </div>
+
+      <div class="admin-card">
+        <h3>Registered Accounts (<span id="adminUserCount">0</span>)</h3>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Name &amp; Email</th>
+                <th>Balance</th>
+                <th>Added Bonus</th>
+                <th>Registered</th>
+              </tr>
+            </thead>
+            <tbody id="adminUsersTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const STORAGE_KEY = "github_demo_platform_v1";
+    const ADMIN_PASSCODE = "admin1234";
+
+    const initialState = {
+      signInBonus: 0,
+      currentUsername: null,
+      adminUnlocked: false,
+      users: {}
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? { ...initialState, ...JSON.parse(raw) } : structuredClone(initialState);
+      } catch {
+        return structuredClone(initialState);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    let state = loadState();
+
+    const homeView = document.getElementById("homeView");
+    const dashboardView = document.getElementById("dashboardView");
+    const adminView = document.getElementById("adminView");
+    const btnHome = document.getElementById("btnHome");
+    const btnDashboard = document.getElementById("btnDashboard");
+    const btnAdmin = document.getElementById("btnAdmin");
+    const statusBox = document.getElementById("statusBox");
+
+    function showMessage(text, isError = false) {
+      statusBox.textContent = text;
+      statusBox.classList.remove("hidden");
+      statusBox.classList.toggle("error", isError);
+    }
+
+    function formatMoney(n) {
+      return "$" + Number(n || 0).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function nowFormatted() {
+      return new Date().toLocaleString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      });
+    }
+
+    function setActiveView(viewName) {
+      homeView.classList.add("hidden");
+      dashboardView.classList.add("hidden");
+      adminView.classList.add("hidden");
+      btnHome.classList.remove("active");
+      btnDashboard.classList.remove("active");
+      btnAdmin.classList.remove("active");
+
+      if (viewName === "home") {
+        homeView.classList.remove("hidden");
+        btnHome.classList.add("active");
+      } else if (viewName === "dashboard") {
+        if (!state.currentUsername || !state.users[state.currentUsername]) {
+          homeView.classList.remove("hidden");
+          btnHome.classList.add("active");
+          showMessage("Please register or sign in first to open the dashboard.", true);
+          return;
+        }
+        renderDashboard();
+        dashboardView.classList.remove("hidden");
+        btnDashboard.classList.add("active");
+      } else if (viewName === "admin") {
+        renderAdmin();
+        adminView.classList.remove("hidden");
+        btnAdmin.classList.add("active");
+      }
+    }
+
+    function renderDashboard() {
+      const u = state.users[state.currentUsername];
+      if (!u) return;
+      document.getElementById("dashWelcomeName").textContent = (u.firstName || u.username).toUpperCase();
+      document.getElementById("dashRefBadge").textContent = "REFERRAL CODE: " + u.username.toUpperCase();
+      document.getElementById("dashUsername").textContent = u.username.toUpperCase();
+      document.getElementById("dashRegDate").textContent = u.createdAt;
+      document.getElementById("dashLastAccess").textContent = u.lastAccess;
+      document.getElementById("dashDeposits").textContent = formatMoney(u.activeDeposits);
+      document.getElementById("dashBalance").textContent = formatMoney(u.balance);
+      document.getElementById("dashBonus").textContent = formatMoney(u.addedBonus);
+      document.getElementById("dashPlan").textContent = u.plan || "Silver";
+    }
+
+    function renderAdmin() {
+      const lockBox = document.getElementById("adminLockBox");
+      const controlsBox = document.getElementById("adminControlsBox");
+
+      if (!state.adminUnlocked) {
+        lockBox.classList.remove("hidden");
+        controlsBox.classList.add("hidden");
+        return;
+      }
+
+      lockBox.classList.add("hidden");
+      controlsBox.classList.remove("hidden");
+      document.getElementById("bonusInput").value = state.signInBonus;
+
+      const usernames = Object.keys(state.users);
+      document.getElementById("adminUserCount").textContent = usernames.length;
+
+      const selectEl = document.getElementById("creditUserSelect");
+      selectEl.innerHTML = usernames.length
+        ? usernames.map((uname) => `<option value="${uname}">${uname} (${formatMoney(state.users[uname].balance)})</option>`).join("")
+        : `<option value="">No registered accounts yet</option>`;
+
+      const tbody = document.getElementById("adminUsersTbody");
+      tbody.innerHTML = usernames.length
+        ? usernames.map((uname) => {
+            const u = state.users[uname];
+            return `
+              <tr>
+                <td><strong>${u.username}</strong></td>
+                <td>${u.firstName} ${u.lastName}<br><span style="color:#9ca3af;">${u.email}</span></td>
+                <td>${formatMoney(u.balance)}</td>
+                <td>${formatMoney(u.addedBonus)}</td>
+                <td>${u.createdAt}</td>
+              </tr>
+            `;
+          }).join("")
+        : `<tr><td colspan="5" style="color:#9ca3af;">No accounts registered yet.</td></tr>`;
+    }
+
+    btnHome.addEventListener("click", () => setActiveView("home"));
+    btnDashboard.addEventListener("click", () => setActiveView("dashboard"));
+    btnAdmin.addEventListener("click", () => setActiveView("admin"));
+
+    document.getElementById("registerForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const firstName = document.getElementById("regFirstName").value.trim();
+      const lastName = document.getElementById("regLastName").value.trim();
+      const username = document.getElementById("regUsername").value.trim();
+      const email = document.getElementById("regEmail").value.trim().toLowerCase();
+      const phone = document.getElementById("regPhone").value.trim();
+      const country = document.getElementById("regCountry").value.trim();
+      const password = document.getElementById("regPassword").value;
+
+      if (state.users[username]) {
+        showMessage("That username is already taken.", true);
+        return;
+      }
+
+      const emailTaken = Object.values(state.users).some((u) => u.email === email);
+      if (emailTaken) {
+        showMessage("That email is already registered.", true);
+        return;
+      }
+
+      const bonus = Number(state.signInBonus) || 0;
+      const stamp = nowFormatted();
+
+      state.users[username] = {
+        firstName,
+        lastName,
+        username,
+        email,
+        phone,
+        country,
+        password,
+        activeDeposits: 0,
+        balance: bonus,
+        addedBonus: bonus,
+        plan: "Silver",
+        createdAt: stamp,
+        lastAccess: stamp
+      };
+      state.currentUsername = username;
+      saveState();
+      e.target.reset();
+      showMessage(`Account created for ${username}!`);
+      setActiveView("dashboard");
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const identifier = document.getElementById("loginIdentifier").value.trim().toLowerCase();
+      const password = document.getElementById("loginPassword").value;
+
+      const matched = Object.values(state.users).find(
+        (u) => (u.username.toLowerCase() === identifier || u.email === identifier) && u.password === password
+      );
+
+      if (!matched) {
+        showMessage("Invalid username/email or password.", true);
+        return;
+      }
+
+      matched.lastAccess = nowFormatted();
+      state.currentUsername = matched.username;
+      saveState();
+      e.target.reset();
+      showMessage(`Signed in as ${matched.username}.`);
+      setActiveView("dashboard");
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      state.currentUsername = null;
+      saveState();
+      showMessage("Signed out.");
+      setActiveView("home");
+    });
+
+    document.getElementById("adminAuthForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const code = document.getElementById("adminPassInput").value;
+      if (code === ADMIN_PASSCODE) {
+        state.adminUnlocked = true;
+        saveState();
+        document.getElementById("adminPassInput").value = "";
+        showMessage("Admin panel unlocked.");
+        renderAdmin();
+      } else {
+        showMessage("Incorrect admin passcode.", true);
+      }
+    });
+
+    document.getElementById("bonusForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const val = Math.max(0, Number(document.getElementById("bonusInput").value) || 0);
+      state.signInBonus = val;
+      saveState();
+      showMessage(`Default sign-in bonus set to ${formatMoney(val)}.`);
+    });
+
+    document.getElementById("creditForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const target = document.getElementById("creditUserSelect").value;
+      const type = document.getElementById("creditTypeSelect").value;
+      const amt = Number(document.getElementById("creditAmountInput").value);
+
+      if (!target || !state.users[target] || Number.isNaN(amt)) {
+        showMessage("Select a valid account and amount.", true);
+        return;
+      }
+
+      state.users[target].balance = Number(state.users[target].balance || 0) + amt;
+      if (type === "bonus") {
+        state.users[target].addedBonus = Number(state.users[target].addedBonus || 0) + amt;
+      }
+
+      saveState();
+      document.getElementById("creditAmountInput").value = "";
+      renderAdmin();
+      if (state.currentUsername === target) {
+        renderDashboard();
+      }
+      showMessage(`Updated ${target}'s account by ${formatMoney(amt)}.`);
+    });
+
+    // BTC Converter & Reference Toggle
+    const rates = { USD: 65000, EUR: 60000, GBP: 51000 };
+    const btcInput = document.getElementById("btcInput");
+    const fiatSelect = document.getElementById("fiatSelect");
+    const btcConverted = document.getElementById("btcConverted");
+
+    function updateConverter() {
+      const btc = parseFloat(btcInput.value) || 0;
+      const cur = fiatSelect.value;
+      const total = btc * (rates[cur] || 65000);
+      btcConverted.textContent = `${btc} BTC ≈ ${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${cur} (sample rate)`;
+    }
+
+    btcInput.addEventListener("input", updateConverter);
+    fiatSelect.addEventListener("change", updateConverter);
+    updateConverter();
+
+    document.getElementById("toggleRefBtn").addEventListener("click", () => {
+      document.getElementById("refCodeBox").classList.toggle("hidden");
+    });
+
+    renderAdmin();
+  </script>
+</body>
+</html>
